@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include "spi_flash_arch_common.h"
 
-#include "API_spi_flash_def.h"
-#include "API_spi_flash.h"
+#include "api_spi_flash_def.h"
+#include "api_spi_flash.h"
 
 #include "port_delay.h"
 
@@ -202,6 +202,7 @@ static int spi_flash_send_advanced_command(uint8_t * command, uint16_t command_s
 
 static int spi_flash_send_basic_command_receive(uint8_t command, uint8_t * response, uint16_t response_size)
 {
+	printf("FIRST CALL\n");
 	spi_flash_arch_select_cs();
 	int rt = spi_flash_arch_write_spi(&command, sizeof(command), SPI_FLASH_DEFAULT_WRITE_TIMEOUT);
 	rt |= spi_flash_arch_read_spi(response, response_size, SPI_FLASH_DEFAULT_READ_TIMEOUT);
@@ -370,13 +371,14 @@ int spi_flash_init(spi_if_hdle spi_if_hdle, spi_flash_cs_t cs_gpio)
 		do
 		{
 			uint8_t reg = 0;
+			printf("SPI FLASH: Resetting device...\n");
 			rt =  spi_flash_get_status_reg_1(&reg);
 			if(rt != SPI_FLASH_OK)
 				return SPI_FLASH_E_IO;
 
 			if(!API_SPI_FLASH_WEL_IS_SET(reg) && !API_SPI_FLASH_BSY_IS_SET(reg))
 				break;
-
+			printf("SPI FLASH: Resetting devicee...\n");
 			rt = spi_flash_send_basic_command(API_SPI_FLASH_CMD_ENABLE_RESET);
 			if(rt != SPI_FLASH_OK)
 				return SPI_FLASH_E_IO;
@@ -396,9 +398,11 @@ int spi_flash_init(spi_if_hdle spi_if_hdle, spi_flash_cs_t cs_gpio)
 	{
 		spi_flash_jedec_id jedec_id = {0};
 
+		printf("SPI FLASH: Resetting deviceee...\n");
 		rt = spi_flash_send_basic_command_receive(API_SPI_FLASH_CMD_READ_JEDEC_ID, (uint8_t *)&jedec_id, (uint16_t)sizeof(jedec_id));
 		if(rt != 0) return rt;
 
+		printf("SPI FLASH: Resetting deviceeee...\n");
 		/* No memory can have capacity of zero bytes. So, the readed JEDEC ID is a no valid response */
 		if(jedec_id.memory_capacity == 0)
 			return SPI_FLASH_E_FAIL;

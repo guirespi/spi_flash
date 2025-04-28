@@ -36,4 +36,6 @@ bool port_delay_read(port_delay_hdle delay_hdle);
  */
 void port_delay_deinit(port_delay_hdle * delay_hdle);
 
+int gpio_read(int * gpio_num);
+
 #endif /* API_API_SPI_FLASH_PORT_INC_PORT_DELAY_H_ */
