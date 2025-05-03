@@ -67,9 +67,9 @@ static void expect_success_spi_flash_send_basic_command_receive(uint8_t command,
 {
 	spi_flash_arch_select_cs_Expect();
 
-    char expected_data[] = {command, 3, 3, 4, 6};
-    // spi_flash_arch_write_spi_ExpectWithArrayAndReturn(expected_data, 1, 1, 0, 0);
-    spi_flash_arch_write_spi_ExpectAndReturn(command, 1, 0, 0);
+    uint8_t expected_data[] = {command};
+    spi_flash_arch_write_spi_ExpectWithArrayAndReturn(expected_data, sizeof(command), 1, 0, 0);
+    // spi_flash_arch_write_spi_ExpectAndReturn(command, 1, 0, 0);
     spi_flash_arch_write_spi_IgnoreArg_timeout();
     spi_flash_arch_write_spi_IgnoreArg_data();
 
@@ -108,9 +108,8 @@ void test_spi_flash_init_success(void){
     expect_success_spi_flash_send_basic_command_receive(API_SPI_FLASH_CMD_READ_JEDEC_ID, (uint8_t *)&expected_jedec_id, sizeof(expected_jedec_id));
     
 
-    // Initialize SPI flash
+    // Initialize SPI f lash
     int result = spi_flash_init(spi_handle, cs_gpio);
-    printf("result: %d\n", result);
     TEST_ASSERT_EQUAL(SPI_FLASH_OK, result);
 }
 

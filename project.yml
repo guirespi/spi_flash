@@ -182,7 +182,8 @@
     uint32: UINT32
     int8: INT8
     bool: UINT8
-  #:treat_as_array:  {}            # hint to cmock that these types are pointers to something
+  :treat_as_array:
+    uint8_t*: uint8_t          # hint to cmock that these types are pointers to something
   #:treat_as_void:  []             # hint to cmock that these types are actually aliases of void
   :memcmp_if_unknown: true # allow cmock to use the memory comparison assertions for unknown types
   :when_ptr: :compare_data # hint to cmock how to handle pointers in general, the options being :compare_ptr, :compare_data, or :smart
