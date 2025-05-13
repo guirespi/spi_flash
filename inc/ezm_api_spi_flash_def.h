@@ -5,8 +5,8 @@
  *      Author: guirespi
  */
 
-#ifndef API_API_SPI_FLASH_INC_API_SPI_FLASH_DEF_H_
-#define API_API_SPI_FLASH_INC_API_SPI_FLASH_DEF_H_
+#ifndef EZM_API_SPI_FLASH_DEF_H_
+#define EZM_API_SPI_FLASH_DEF_H_
 
 /* (CFI) Common Flash Interface commands. Refer to JEDEC standards.*/
 
@@ -51,4 +51,4 @@ typedef struct __attribute__((packed))
 	uint8_t memory_capacity; /*< Memory capacity */
 }spi_flash_jedec_id;
 
-#endif /* API_API_SPI_FLASH_INC_API_SPI_FLASH_DEF_H_ */
+#endif /* EZM_API_SPI_FLASH_DEF_H_ */

@@ -8,7 +8,7 @@
 #ifndef API_API_SPI_FLASH_ARCH_ARM_STM32F4XX_C_
 #define API_API_SPI_FLASH_ARCH_ARM_STM32F4XX_C_
 
-#include <spi_flash_arch_common.h>
+#include <ezm_spi_flash_arch_common.h>
 #include <stdbool.h>
 
 #include "stm32f4xx_hal.h"
@@ -28,9 +28,9 @@ static uint16_t _pin = 0;
  *
  * @return true: read. false: not ready.
  */
-static inline bool spi_flash_arch_ready(void);
+static inline bool ezm_spi_flash_arch_ready(void);
 
-static inline bool spi_flash_arch_ready(void)
+static inline bool ezm_spi_flash_arch_ready(void)
 {
 	return (_spi_hdle == NULL?false:true);
 }
@@ -44,9 +44,9 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef * hspi)
 	}
 }
 
-int spi_flash_arch_init_spi(void * spi_hdle, spi_flash_arch_rx_it_hdle spi_rx_it_hdle)
+int ezm_spi_flash_arch_init_spi(void * spi_hdle, spi_flash_arch_rx_it_hdle spi_rx_it_hdle)
 {
-	if(spi_flash_arch_ready() == true) return SPI_FLASH_ARCH_E_READY;
+	if(ezm_spi_flash_arch_ready() == true) return EZM_SPI_FLASH_ARCH_E_READY;
 
 	SPI_HandleTypeDef * hspi1 = (SPI_HandleTypeDef *) spi_hdle;
 
@@ -70,10 +70,10 @@ int spi_flash_arch_init_spi(void * spi_hdle, spi_flash_arch_rx_it_hdle spi_rx_it
 
 	_spi_hdle = spi_hdle;
 	_spi_rx_hdle = spi_rx_it_hdle;
-	return SPI_FLASH_ARCH_OK;
+	return EZM_SPI_FLASH_ARCH_OK;
 }
 
-int spi_flash_arch_init_cs(uint32_t port, uint16_t pin)
+int ezm_spi_flash_arch_init_cs(uint32_t port, uint16_t pin)
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -89,41 +89,41 @@ int spi_flash_arch_init_cs(uint32_t port, uint16_t pin)
 	_port = port;
 	_pin = pin;
 
-	return SPI_FLASH_ARCH_OK;
+	return EZM_SPI_FLASH_ARCH_OK;
 }
 
-void spi_flash_arch_select_cs(void)
+void ezm_spi_flash_arch_select_cs(void)
 {
 	HAL_GPIO_WritePin((GPIO_TypeDef  *)_port, _pin, GPIO_PIN_RESET);
 }
 
-void spi_flash_arch_deselect_cs(void)
+void ezm_spi_flash_arch_deselect_cs(void)
 {
 	HAL_GPIO_WritePin((GPIO_TypeDef  *)_port, _pin, GPIO_PIN_SET);
 }
 
-int spi_flash_arch_read_spi(uint8_t * buffer, uint16_t buffer_size, uint32_t timeout)
+int ezm_spi_flash_arch_read_spi(uint8_t * buffer, uint16_t buffer_size, uint32_t timeout)
 {
-	if(spi_flash_arch_ready() == false) return SPI_FLASH_ARCH_E_READY;
+	if(ezm_spi_flash_arch_ready() == false) return EZM_SPI_FLASH_ARCH_E_READY;
 
 	return 	HAL_SPI_Receive(ARCH_STM32F4XX_SPI_HDLE, buffer, buffer_size, timeout);
 }
 
-int spi_flash_arch_write_spi(uint8_t * data, uint16_t data_size, uint32_t timeout)
+int ezm_spi_flash_arch_write_spi(uint8_t * data, uint16_t data_size, uint32_t timeout)
 {
-	if(spi_flash_arch_ready() == false) return SPI_FLASH_ARCH_E_READY;
+	if(ezm_spi_flash_arch_ready() == false) return EZM_SPI_FLASH_ARCH_E_READY;
 
 	return 	HAL_SPI_Transmit(ARCH_STM32F4XX_SPI_HDLE, data, data_size, timeout);
 }
 
-int spi_flash_arch_read_it_spi(uint8_t * data, uint16_t data_size)
+int ezm_spi_flash_arch_read_it_spi(uint8_t * data, uint16_t data_size)
 {
-	if(spi_flash_arch_ready() == false) return SPI_FLASH_ARCH_E_READY;
+	if(ezm_spi_flash_arch_ready() == false) return EZM_SPI_FLASH_ARCH_E_READY;
 
 	return HAL_SPI_Receive_IT(ARCH_STM32F4XX_SPI_HDLE, data, data_size);
 }
 
-void spi_flash_arch_block_delay(uint32_t milliseconds)
+void ezm_spi_flash_arch_block_delay(uint32_t milliseconds)
 {
 	HAL_Delay(milliseconds);
 }
