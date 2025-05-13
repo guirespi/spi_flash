@@ -426,7 +426,7 @@ int ezm_spi_flash_read(uint8_t * buffer, uint32_t address, uint32_t size)
 		if(err != EZM_SPI_FLASH_OK)
 		{
 			SPI_FLASH_SET_CHIP_STATE(last_state);
-			return err;
+			return EZM_SPI_FLASH_E_IO;
 		}
 		read += to_read;
 		remaining -= to_read;
