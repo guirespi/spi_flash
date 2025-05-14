@@ -24,14 +24,6 @@
 
 #define SPI_FLASH_COMMAND_AND_ADDRESS_SIZE (4) /*One byte for command, three bytes for 24-bit address of chip */
 
-/* The following values are set based in W25Q64JV datasheet and the max time for each operarion */
-#define SPI_FLASH_WRITE_STATUS_MAX_TIMEOUT 	(15) /*< milliseconds */
-#define SPI_FLASH_PROGRAM_PAGE_MAX_TIMEOUT 	(3) /*< milliseconds */
-#define SPI_FLASH_SECTOR_ERASE_MAX_TIMEOUT 	(400) /*< milliseconds */
-#define SPI_FLASH_BLOCK32_ERASE_MAX_TIMEOUT (1600) /*< milliseconds */
-#define SPI_FLASH_BLOCK64_ERASE_MAX_TIMEOUT (2000) /*< milliseconds */
-#define SPI_FLASH_CHIP_ERASE_MAX_TIMEOUT 	(100*1000) /*< milliseconds */
-
 /* We initialize the chip state to EZM_SPI_FLASH_STATE_DISABLE */
 STATIC_GLOBAL ezm_spi_flash_chip_t spi_flash_chip = {0};
 
@@ -276,14 +268,14 @@ static int ezm_spi_flash_wait_until_chip_ready(uint32_t ms)
 
 static int ezm_spi_flash_program_page(uint8_t * buffer, uint32_t address, uint16_t size)
 {
-	uint8_t * command = calloc(SPI_FLASH_COMMAND_AND_ADDRESS_SIZE + size, sizeof(*command));
-
+	uint8_t command[SPI_FLASH_COMMAND_AND_ADDRESS_SIZE + size];
 	uint32_t command_address = (API_SPI_FLASH_CMD_WRITE_PAGE | SPI_FLASH_HTONL(address));
+	
+	memset(command, 0, sizeof(command));
 	memcpy((void *)command, (void *)&command_address, sizeof(command_address));
 	memcpy((void *)(command + sizeof(command_address)), buffer, size);
+	
 	int rt = ezm_spi_flash_send_advanced_command(command, SPI_FLASH_COMMAND_AND_ADDRESS_SIZE + size);
-
-	free(command);
 
 	if(rt != EZM_SPI_FLASH_OK)
 		return rt;
@@ -444,8 +436,9 @@ int ezm_spi_flash_write(uint8_t * buffer, uint32_t address, uint32_t size)
 	if(SPI_FLASH_GET_CHIP_STATE == EZM_SPI_FLASH_STATE_BUSY)
 		return EZM_SPI_FLASH_E_BUSY;
 
-	if(size == 0) return EZM_SPI_FLASH_OK;
+	if(buffer == 0) return EZM_SPI_FLASH_E_NULL;
 	if(address > spi_flash_chip.chip_size || (address + size) > spi_flash_chip.chip_size) return EZM_SPI_FLASH_E_BOUNDARIES;
+	if(size == 0) return EZM_SPI_FLASH_OK;
 
 	int rt = EZM_SPI_FLASH_OK;
 

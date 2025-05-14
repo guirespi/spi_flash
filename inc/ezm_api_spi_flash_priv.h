@@ -10,6 +10,14 @@
 #define SPI_FLASH_SECTOR_SIZE (1024*4)
 #define SPI_FLASH_PAGE_SIZE (256)
 
+/* The following values are set based in W25Q64JV datasheet and the max time for each operarion */
+#define SPI_FLASH_WRITE_STATUS_MAX_TIMEOUT 	(15) /*< milliseconds */
+#define SPI_FLASH_PROGRAM_PAGE_MAX_TIMEOUT 	(3) /*< milliseconds */
+#define SPI_FLASH_SECTOR_ERASE_MAX_TIMEOUT 	(400) /*< milliseconds */
+#define SPI_FLASH_BLOCK32_ERASE_MAX_TIMEOUT (1600) /*< milliseconds */
+#define SPI_FLASH_BLOCK64_ERASE_MAX_TIMEOUT (2000) /*< milliseconds */
+#define SPI_FLASH_CHIP_ERASE_MAX_TIMEOUT 	(100*1000) /*< milliseconds */
+
 #define SPI_FLASH_HTONL(address) (((address & 0x000000ff)<<24)|((address & 0x0000ff00)<<8|((address & 0x00ff0000)>>8)|(address & 0xff000000)>>24))
 
 typedef struct
