@@ -167,7 +167,7 @@ static int ezm_spi_flash_send_advanced_command_receive(uint8_t * command, uint16
 	int rt = ezm_spi_flash_arch_write_spi(command, command_size, SPI_FLASH_DEFAULT_WRITE_TIMEOUT);
 	rt |= ezm_spi_flash_arch_read_spi(response, response_size, SPI_FLASH_DEFAULT_READ_TIMEOUT);
 	ezm_spi_flash_arch_deselect_cs();
-	return rt;
+	return rt == EZM_SPI_FLASH_ARCH_OK ? EZM_SPI_FLASH_OK : EZM_SPI_FLASH_E_ARCH;
 }
 
 static int ezm_spi_flash_send_advanced_command(uint8_t * command, uint16_t command_size)
@@ -175,7 +175,7 @@ static int ezm_spi_flash_send_advanced_command(uint8_t * command, uint16_t comma
 	ezm_spi_flash_arch_select_cs();
 	int rt = ezm_spi_flash_arch_write_spi(command, command_size, SPI_FLASH_DEFAULT_WRITE_TIMEOUT);
 	ezm_spi_flash_arch_deselect_cs();
-	return rt;
+	return rt == EZM_SPI_FLASH_ARCH_OK ? EZM_SPI_FLASH_OK : EZM_SPI_FLASH_E_ARCH;
 }
 
 
@@ -185,7 +185,7 @@ static int ezm_spi_flash_send_basic_command_receive(uint8_t command, uint8_t * r
 	int rt = ezm_spi_flash_arch_write_spi(&command, sizeof(command), SPI_FLASH_DEFAULT_WRITE_TIMEOUT);
 	rt |= ezm_spi_flash_arch_read_spi(response, response_size, SPI_FLASH_DEFAULT_READ_TIMEOUT);
 	ezm_spi_flash_arch_deselect_cs();
-	return rt;
+	return rt == EZM_SPI_FLASH_ARCH_OK ? EZM_SPI_FLASH_OK : EZM_SPI_FLASH_E_ARCH;
 }
 
 static int ezm_spi_flash_send_basic_command(uint8_t command)
@@ -193,7 +193,7 @@ static int ezm_spi_flash_send_basic_command(uint8_t command)
 	ezm_spi_flash_arch_select_cs();
 	int rt = ezm_spi_flash_arch_write_spi(&command, sizeof(command), SPI_FLASH_DEFAULT_WRITE_TIMEOUT);
 	ezm_spi_flash_arch_deselect_cs();
-	return rt;
+	return rt == EZM_SPI_FLASH_ARCH_OK ? EZM_SPI_FLASH_OK : EZM_SPI_FLASH_E_ARCH;
 }
 
 static int ezm_spi_flash_get_status_reg_1(uint8_t * reg)
@@ -451,7 +451,10 @@ int ezm_spi_flash_write(uint8_t * buffer, uint32_t address, uint32_t size)
 	{
 		rt = ezm_spi_flash_wait_until_chip_write_enable();
 		if(rt != EZM_SPI_FLASH_OK)
+		{
+			SPI_FLASH_SET_CHIP_STATE(EZM_SPI_FLASH_STATE_ERROR);
 			return rt;
+		}
 
 		size_t to_write = SPI_FLASH_PAGE_SIZE;
 		if((address + wrote)%SPI_FLASH_PAGE_SIZE != 0)
