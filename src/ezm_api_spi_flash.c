@@ -510,7 +510,7 @@ int ezm_spi_flash_erase_range(size_t address, uint32_t size)
 	{
 		rt = ezm_spi_flash_wait_until_chip_write_enable();
 		if(rt != EZM_SPI_FLASH_OK)
-			return rt;
+			break;
 
 		/* If the address is the beginning and the size is the total of the chip, delete everything.*/
 		if(address == 0 && size == spi_flash_chip.chip_size)
@@ -555,6 +555,15 @@ int ezm_spi_flash_erase_range(size_t address, uint32_t size)
 				break;
 		}
 	}
-	SPI_FLASH_SET_CHIP_STATE(EZM_SPI_FLASH_STATE_READY);
+
+	if(rt == EZM_SPI_FLASH_OK)
+	{
+		SPI_FLASH_SET_CHIP_STATE(EZM_SPI_FLASH_STATE_READY);
+	}
+	else
+	{
+		SPI_FLASH_SET_CHIP_STATE(EZM_SPI_FLASH_STATE_ERROR);
+	}
+
 	return rt;
 }
